@@ -1,9 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance { get; private set; }
+
+    public event EventHandler<OnSelectedDeskChangedEventArgs> OnSelectedDeskChanged;
+    public class OnSelectedDeskChangedEventArgs : EventArgs
+    {
+        public Desk selectedDesk;
+    }
+    
     [Header("Player Movement")]
     [SerializeField] private float moveSpeed = 10.0f;
     [SerializeField] private float turnSpeed = 10.0f;
@@ -30,8 +39,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private float interactionDistance;
 
+    [Header("Manager")]
+    [SerializeField] private InputManager inputManager;
+
     private CharacterController characterController;
-    private float horizontalInput, verticalInput;
+    private Vector2 inputVector;
     private float mouseX, mouseY;
     private float moveMultiplier = 1.0f;
     private float camXRotation;
@@ -41,16 +53,40 @@ public class PlayerController : MonoBehaviour
 
     //Interaction Raycasts
     private RaycastHit hit;
+
+    private bool isWalking;
+    Vector3 moveDir;
+    private Vector3 lastInteractDir;
+    private Desk selectedDesk;
+
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        if (Instance != null)
+        {
+            Debug.LogError("There is more than one Player instance");
+        }
+        Instance = this;
     }
+
     // Start is called before the first frame update
     void Start()
     {
         //Hide Mouse
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        inputManager.OnInteractAction += InputManager_OnInteractAction;
+    }
+
+    private void InputManager_OnInteractAction(object sender, System.EventArgs e)
+    {
+
+        if (selectedDesk! != null)
+        {
+            selectedDesk.Interact();
+        }
+
     }
 
     // Update is called once per frame
@@ -59,18 +95,19 @@ public class PlayerController : MonoBehaviour
         GetInput();
         RotatePlayer();
 
-        GroundCheck();
+        //GroundCheck();
         MovePlayer();
-        JumpCheck();
+        //JumpCheck();
 
         Shoot();
-        Interact();
+        HandleInteract();
     }
 
     private void GetInput()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
+        inputVector = inputManager.GetMovementVectorNormalized();
+        //horizontalInput = Input.GetAxis("Horizontal");
+        //verticalInput = Input.GetAxis("Vertical");
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
         moveMultiplier = Input.GetButton("Sprint") ? sprintMultiplier : 1.0f;
@@ -79,8 +116,12 @@ public class PlayerController : MonoBehaviour
 
     private void MovePlayer()
     {
-        characterController.Move((transform.forward * verticalInput + transform.right * horizontalInput)
-            * moveSpeed * moveMultiplier * Time.deltaTime);
+        moveDir = new Vector3(inputVector.x, 0, inputVector.y);
+
+        isWalking = moveDir != Vector3.zero;
+
+
+        characterController.Move(moveDir * moveSpeed * moveMultiplier * Time.deltaTime);
 
         //Ground Check
         if (isGrounded && playerVelocity.y < 0)
@@ -91,33 +132,16 @@ public class PlayerController : MonoBehaviour
         playerVelocity.y += gravity * Time.deltaTime;
 
         characterController.Move(playerVelocity * Time.deltaTime);
+
+
     }
 
     private void RotatePlayer()
     {
-        //Player turn movement
-        transform.Rotate(Vector3.up * turnSpeed * Time.deltaTime * mouseX);
 
-        //Camera upo/down movement
-        camXRotation += Time.deltaTime * mouseY * turnSpeed * (invertMouse ? 1 : -1);
-        camXRotation = Mathf.Clamp(camXRotation, -50.0f, 50.0f);
-
-        cameraTransform.localRotation = Quaternion.Euler(camXRotation, 0, 0);
+        transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * turnSpeed);
     }
 
-    private void GroundCheck()
-    {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundMask);
-    }
-
-    private void JumpCheck()
-    {
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            playerVelocity.y = jumpVelocity;
-        }
-
-    }
 
     private void OnDrawGizmos()//give some visual debugging on ground check this case
     {
@@ -143,40 +167,57 @@ public class PlayerController : MonoBehaviour
         }
 
     }
-    private void Interact()
+
+
+    private void HandleInteract()
     {
-        // Cast a ray from the middle of the camera
-        Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        Vector2 inputVector = inputManager.GetMovementVectorNormalized();
+        Vector3 moveDir = new Vector3(inputVector.x, 0, inputVector.y);
 
-        // Check if the ray hits something within the specified distance and on a specific layer
-        if (Physics.Raycast(ray, out hit, interactionDistance, layerMask))
+
+        if (moveDir != Vector3.zero)
         {
-            Debug.Log("We hit " + hit.collider.name);
-            Debug.DrawRay(ray.origin, ray.direction * interactionDistance, Color.red);
+            lastInteractDir = moveDir;
+        }
 
-            // Get the ISelectable component from the hit object
-            selection = hit.transform.GetComponent<ISelectable>();
+        float interactDistance = 2f;
 
-            // Check if the hit object has the ISelectable interface
-            if (selection != null)//double check object has specific functions
+        //if hit something
+        if (Physics.Raycast(transform.position, lastInteractDir, out RaycastHit raycastHit, interactDistance, layerMask))
+        {
+            if (raycastHit.transform.TryGetComponent(out Desk desk))
             {
-                // Call the OnHoverEnter method when the object is hovered
-                selection.OnHoverEnter();
-
-                // Check for the E key press and call OnSelect if pressed
-                if (Input.GetKeyDown(KeyCode.E))
+                //has desk
+                //desk.Interact();
+                if (desk != selectedDesk)
                 {
-                    selection.OnSelect();
+                    SetSelectedCounter(desk);
                 }
             }
+            else
+            {
+                SetSelectedCounter(null);
+            }
+        }
+        else
+        {
+            SetSelectedCounter(null);
         }
 
-        // If the ray doesn't hit anything and there was a previous selection, call OnHoverExit
-        if (hit.transform == null && selection != null)
-        {
-            selection.OnHoverExit();
-            selection = null;
-        }
     }
 
+    private void SetSelectedCounter(Desk selectedDesk)
+    {
+        this.selectedDesk = selectedDesk;
+
+        OnSelectedDeskChanged?.Invoke(this, new OnSelectedDeskChangedEventArgs
+        {
+            selectedDesk = selectedDesk
+        });
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        
+    }
 }
