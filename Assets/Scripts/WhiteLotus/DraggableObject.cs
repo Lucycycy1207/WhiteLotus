@@ -4,20 +4,11 @@ using UnityEngine;
 
 public class DraggableObject : MonoBehaviour
 {
-    
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
-    private void OnCollisionEnter(Collision collision)
+    public void Interact()
     {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            Debug.Log("draggable object collide with Player");
-        }
+        Debug.Log("Interact with Draggable");
     }
 
 

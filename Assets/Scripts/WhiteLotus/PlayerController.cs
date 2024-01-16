@@ -5,18 +5,21 @@ using System;
 
 public class PlayerController : MonoBehaviour
 {
+
+    
     public static PlayerController Instance { get; private set; }
 
     public event EventHandler<OnSelectedDeskChangedEventArgs> OnSelectedDeskChanged;
     public class OnSelectedDeskChangedEventArgs : EventArgs
     {
-        public Desk selectedDesk;
+        public SelectableObject selectedDesk;
     }
     
     [Header("Player Movement")]
     [SerializeField] private float moveSpeed = 10.0f;
     [SerializeField] private float turnSpeed = 10.0f;
     [SerializeField] private Transform cameraTransform;
+    //[SerializeField] private Transform mainCameraTranform;
     [SerializeField] private bool invertMouse;
     [SerializeField] private float sprintMultiplier = 2;
 
@@ -57,9 +60,10 @@ public class PlayerController : MonoBehaviour
     private bool isWalking;
     Vector3 moveDir;
     private Vector3 lastInteractDir;
-    private Desk selectedDesk;
+    private SelectableObject selectedDesk;
 
-
+    private Transform mainCameraTransform;
+    
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -68,6 +72,8 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("There is more than one Player instance");
         }
         Instance = this;
+        Debug.Log(Camera.main);
+        mainCameraTransform = Camera.main.transform;
     }
 
     // Start is called before the first frame update
@@ -84,7 +90,8 @@ public class PlayerController : MonoBehaviour
 
         if (selectedDesk! != null)
         {
-            selectedDesk.Interact();
+            Transform temp = selectedDesk.gameObject.transform;
+            selectedDesk.Interact(selectedDesk.tag);
         }
 
     }
@@ -101,8 +108,17 @@ public class PlayerController : MonoBehaviour
 
         Shoot();
         HandleInteract();
+        UpdateMainCamera();
+
     }
 
+
+    private void UpdateMainCamera()
+    {
+        float camera_delay_t = 1f;
+        //Debug.Log(mainCameraTransform.position);
+        mainCameraTransform.position = Vector3.Lerp(mainCameraTransform.position, this.transform.position, camera_delay_t);
+    }
     private void GetInput()
     {
         inputVector = inputManager.GetMovementVectorNormalized();
@@ -185,7 +201,7 @@ public class PlayerController : MonoBehaviour
         //if hit something
         if (Physics.Raycast(transform.position, lastInteractDir, out RaycastHit raycastHit, interactDistance, layerMask))
         {
-            if (raycastHit.transform.TryGetComponent(out Desk desk))
+            if (raycastHit.transform.TryGetComponent(out SelectableObject desk))
             {
                 //has desk
                 //desk.Interact();
@@ -206,7 +222,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void SetSelectedCounter(Desk selectedDesk)
+    private void SetSelectedCounter(SelectableObject selectedDesk)
     {
         this.selectedDesk = selectedDesk;
 

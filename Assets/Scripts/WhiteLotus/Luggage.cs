@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Desk : MonoBehaviour
+public class Luggage : MonoBehaviour
 {
     public void Interact()
     {
-        Debug.Log("Interact with desk");
+        Debug.Log("Interact with luggage");
     }
+
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SelectedDeskVisual : MonoBehaviour
 {
-    [SerializeField] private Desk desk;
+    [SerializeField] private SelectableObject desk;
     [SerializeField] private GameObject visualGameObject;
     private void Start()
     {
@@ -13,9 +13,12 @@ public class SelectedDeskVisual : MonoBehaviour
 
     private void PlayerOnSelectedDeskChanged(object sender, PlayerController.OnSelectedDeskChangedEventArgs e)
     {
+        if (visualGameObject == null) { return; }
+        
         if (e.selectedDesk == desk)
         {
             Show();
+            Debug.Log("visual active");
         }
         else
         {
