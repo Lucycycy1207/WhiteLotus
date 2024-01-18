@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class PushButton : MonoBehaviour, ISelectable
+public class PushButton : MonoBehaviour
 {
     [SerializeField] private Renderer buttonRenderer;
     [SerializeField] private Color defaultColor;
