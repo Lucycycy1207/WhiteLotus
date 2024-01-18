@@ -2,19 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.Events;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController: MonoBehaviour
 {
 
-    
     public static PlayerController Instance { get; private set; }
 
-    public event EventHandler<OnSelectedDeskChangedEventArgs> OnSelectedDeskChanged;
-    public class OnSelectedDeskChangedEventArgs : EventArgs
+    public event EventHandler<OnSelectedObjectChangedEventArgs> OnSelectedObjectChanged;
+    public class OnSelectedObjectChangedEventArgs : EventArgs
     {
-        public SelectableObject selectedDesk;
+        public HighlightableObject selectedObjectArg;
     }
-    
     [Header("Player Movement")]
     [SerializeField] private float moveSpeed = 10.0f;
     [SerializeField] private float turnSpeed = 10.0f;
@@ -47,12 +46,11 @@ public class PlayerController : MonoBehaviour
 
     private CharacterController characterController;
     private Vector2 inputVector;
-    private float mouseX, mouseY;
+    //private float mouseX, mouseY;
     private float moveMultiplier = 1.0f;
-    private float camXRotation;
     private bool isGrounded;
     private Vector3 playerVelocity;
-    [SerializeField] private ISelectable selection;
+    [SerializeField] private Transform playerPickTransform;
 
     //Interaction Raycasts
     private RaycastHit hit;
@@ -60,7 +58,9 @@ public class PlayerController : MonoBehaviour
     private bool isWalking;
     Vector3 moveDir;
     private Vector3 lastInteractDir;
-    private SelectableObject selectedDesk;
+    private HighlightableObject selectedObject;
+    public bool isPickingSomething;
+    private GameObject PickedItem;
 
     private Transform mainCameraTransform;
     
@@ -72,7 +72,6 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("There is more than one Player instance");
         }
         Instance = this;
-        Debug.Log(Camera.main);
         mainCameraTransform = Camera.main.transform;
     }
 
@@ -83,15 +82,51 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         inputManager.OnInteractAction += InputManager_OnInteractAction;
+
+        isPickingSomething = false;
+    }
+
+    public GameObject GetPickedItem()
+    {
+        return PickedItem;
+    }
+    public void SetPickedItem(GameObject g)
+    {
+        PickedItem = g;
+        if (g != null)
+        {
+            isPickingSomething = true;
+        }
+        else
+        {
+            isPickingSomething = false;
+        }
     }
 
     private void InputManager_OnInteractAction(object sender, System.EventArgs e)
     {
 
-        if (selectedDesk! != null)
+        if (selectedObject != null)
         {
-            Transform temp = selectedDesk.gameObject.transform;
-            selectedDesk.Interact(selectedDesk.tag);
+            if (selectedObject.gameObject.TryGetComponent<ISelectable>(out ISelectable isSelectable))
+            {
+                isSelectable.OnSelect();
+            }
+            else if (selectedObject.gameObject.TryGetComponent<IPickable>(out IPickable isPickable))
+            {
+                if (isPickingSomething == true)
+                {
+                    isPickable.OnDropped();
+                    isPickingSomething = false;
+                }
+                else
+                {
+                    isPickingSomething = true;
+
+                    isPickable.OnPicked(playerPickTransform);
+                    PickedItem = selectedObject.gameObject;
+                }
+            }
         }
 
     }
@@ -106,7 +141,6 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
         //JumpCheck();
 
-        Shoot();
         HandleInteract();
         UpdateMainCamera();
 
@@ -124,8 +158,8 @@ public class PlayerController : MonoBehaviour
         inputVector = inputManager.GetMovementVectorNormalized();
         //horizontalInput = Input.GetAxis("Horizontal");
         //verticalInput = Input.GetAxis("Vertical");
-        mouseX = Input.GetAxis("Mouse X");
-        mouseY = Input.GetAxis("Mouse Y");
+        //mouseX = Input.GetAxis("Mouse X");
+        //mouseY = Input.GetAxis("Mouse Y");
         moveMultiplier = Input.GetButton("Sprint") ? sprintMultiplier : 1.0f;
 
     }
@@ -154,86 +188,71 @@ public class PlayerController : MonoBehaviour
 
     private void RotatePlayer()
     {
-
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * turnSpeed);
     }
 
 
-    private void OnDrawGizmos()//give some visual debugging on ground check this case
-    {
-        Gizmos.color = Color.black;
-
-        Gizmos.DrawSphere(groundCheck.position, groundCheckDistance);
-    }
-
-    private void Shoot()
-    {
-        if (Input.GetButtonDown("Fire1"))
-        {
-            Rigidbody bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
-            bullet.AddForce(shootPoint.forward * shootForce, ForceMode.Impulse);
-            Destroy(bullet.gameObject, 5.0f);
-        }
-
-        if (Input.GetButtonDown("Fire2"))
-        {
-            Rigidbody bullet = Instantiate(rocketPrefab, shootPoint.position, shootPoint.rotation);
-            bullet.AddForce(shootPoint.forward * shootForce, ForceMode.Impulse);
-            Destroy(bullet.gameObject, 5.0f);
-        }
-
-    }
-
 
     private void HandleInteract()
     {
+        
         Vector2 inputVector = inputManager.GetMovementVectorNormalized();
         Vector3 moveDir = new Vector3(inputVector.x, 0, inputVector.y);
-
+        float interactDistance = 2f;
 
         if (moveDir != Vector3.zero)
         {
             lastInteractDir = moveDir;
         }
 
-        float interactDistance = 2f;
-
+        //Create 3 ray origin, with height 0, 1, 2
+        //Priority Level 0 > 2 > 1
         //if hit something
-        if (Physics.Raycast(transform.position, lastInteractDir, out RaycastHit raycastHit, interactDistance, layerMask))
+        Vector3 groundHeight = transform.position; groundHeight.y = 0;
+        Vector3 tableHeight = transform.position; tableHeight.y = 1;
+        Vector3 shelfHeight = transform.position; shelfHeight.y = 2;
+        RaycastHit[] raycastHit= new RaycastHit[3];
+        Vector3[] HeightList = { groundHeight, shelfHeight, tableHeight };
+
+        int HeightNum = 3;
+        bool hasHit = false;
+        for (int i = 0; i < HeightNum; i++)
         {
-            if (raycastHit.transform.TryGetComponent(out SelectableObject desk))
+
+            if (Physics.Raycast(HeightList[i], lastInteractDir, out raycastHit[i], interactDistance, layerMask))
             {
-                //has desk
-                //desk.Interact();
-                if (desk != selectedDesk)
+                if (raycastHit[i].transform.TryGetComponent(out HighlightableObject desk))
                 {
-                    SetSelectedCounter(desk);
+                    if (desk != selectedObject)
+                    {
+                        SetSelectedObject(desk);
+                        hasHit = true;
+                        break;
+                    }
+                    else
+                    {
+                        //player still hit to previous selectable game object
+                        hasHit = true;
+                        break;
+                    }
                 }
             }
-            else
-            {
-                SetSelectedCounter(null);
-            }
         }
-        else
+        
+        if (hasHit == false)
         {
-            SetSelectedCounter(null);
+            SetSelectedObject(null);
         }
-
     }
 
-    private void SetSelectedCounter(SelectableObject selectedDesk)
+    private void SetSelectedObject(HighlightableObject _selectedObject)
     {
-        this.selectedDesk = selectedDesk;
+        this.selectedObject = _selectedObject;
 
-        OnSelectedDeskChanged?.Invoke(this, new OnSelectedDeskChangedEventArgs
+        OnSelectedObjectChanged?.Invoke(this, new OnSelectedObjectChangedEventArgs
         {
-            selectedDesk = selectedDesk
+            selectedObjectArg = _selectedObject
         });
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        
-    }
 }

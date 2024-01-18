@@ -2,18 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectableObject : MonoBehaviour
+public class SelectableObject : MonoBehaviour, ISelectable
 {
-    private string tag;
-
-    public void Interact(string _tag)
+    public virtual void OnSelect()
     {
-        tag = _tag;
-        Debug.Log($"Interact with {tag}");
+        //Debug.Log($"Interact with {this.tag}");
 
 
         //Pick Up
-        if (tag == "Luggage")
+        if (this.tag == "Luggage")
         {
             Transform LuggageVisualOnHand = PlayerController.Instance.transform.Find("PickUpPos").Find("SuitCasePickUp");
             if (!LuggageVisualOnHand.gameObject.activeSelf)
@@ -24,7 +21,7 @@ public class SelectableObject : MonoBehaviour
 
         }
 
-        else if (tag == "LuggageCar")
+        else if (this.tag == "LuggageCar")
         {
             bool hasLuggage = PlayerController.Instance.transform.Find("PickUpPos").Find("SuitCasePickUp").gameObject.activeSelf;
             if (hasLuggage)
@@ -33,6 +30,11 @@ public class SelectableObject : MonoBehaviour
                 Transform LuggageVisualOnHand = PlayerController.Instance.transform.Find("PickUpPos").Find("SuitCasePickUp");
                 LuggageVisualOnHand.gameObject.SetActive(false);
             }
+        }
+
+        else if (this.tag == "desk")
+        {
+
         }
     }
     void DestroyWithChildrenRecursive(GameObject obj)
