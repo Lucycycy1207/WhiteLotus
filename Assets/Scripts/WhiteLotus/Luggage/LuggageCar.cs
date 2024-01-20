@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class LuggageCar : HighlightableObject, ISelectable
 {
-
+    [SerializeField] LuggageGameManager luggageGameManager;
     private int maxLuggage;
     private int currLuggage;
     [SerializeField] AudioSource putLuggageAudio;
-    
+    [SerializeField] AudioSource TaskFinishAudio;
 
-
-    //[SerializeField] private GameObject suitcasePickUp;
 
     [SerializeField] GameObject[] Luggage;
 
+
+    
     public void OnSelect()
     {
         Debug.Log("OnSelect with LuggageCar");
@@ -34,7 +34,10 @@ public class LuggageCar : HighlightableObject, ISelectable
 
     protected override void Start()
     {
+
         base.Start();
+        putLuggageAudio.enabled = false;
+        TaskFinishAudio.enabled = false;
         maxLuggage = 3;
         currLuggage = 0;
         
@@ -47,27 +50,48 @@ public class LuggageCar : HighlightableObject, ISelectable
 
     public void AddLuggage()
     {
-        Debug.Log("add luggage sound");
+        //Debug.Log("add luggage sound");
+        putLuggageAudio.enabled = true;
         putLuggageAudio.time = 0;
         putLuggageAudio.Play();
-        currLuggage ++;
+        float playTime = 0.3f;
+        putLuggageAudio.SetScheduledEndTime(AudioSettings.dspTime + playTime);
+
+        currLuggage++;
         Luggage[currLuggage - 1].SetActive(true);
+
+        CheckFull();
 
     }
 
-    private void Update()
+    private void CheckFull()
     {
-        if (putLuggageAudio.time > 1)
-        {
-            putLuggageAudio.Stop();
-            
-        }
         if (currLuggage == maxLuggage)
         {
-            Debug.Log("Luggage Car is full, do something");
-           
-            ResetCar();
+            //Debug.Log("Luggage Car is full, do something");
+            float delayTime = 0.5f;
+            Invoke(nameof(CompleteGame), delayTime);
         }
+    }
+
+
+    private void CompleteGame()
+    {
+        PlayFinishAudio();
+
+        ResetCar();
+        luggageGameManager.ResetLuggageGame();
+
+    }
+
+    private void PlayFinishAudio()
+    {
+        //Debug.Log("finish");
+        TaskFinishAudio.enabled = true;
+
+        TaskFinishAudio.Play();
+        float playTime = 0.5f;
+        TaskFinishAudio.SetScheduledEndTime(AudioSettings.dspTime + playTime);
     }
 
     private void ResetCar()
