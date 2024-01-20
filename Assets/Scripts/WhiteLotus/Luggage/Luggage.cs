@@ -26,16 +26,23 @@ public class Luggage : HighlightableObject, IPickable
     {
         Debug.Log("OnPicked with luggage");
         //Pickup item
+        
         transform.position = attachTransform.position;
+        //transform.localPosition = Vector3.zero;
         transform.rotation = attachTransform.rotation;
-        transform.Rotate(0, 90, 0);
         transform.SetParent(attachTransform);
+
+        luggageRb.isKinematic = true;
+        luggageRb.useGravity = false;
+        transform.Rotate(0, 90, 0);
+
+      
+        
 
         //make the highlight inactive
         SetHighlightMode(false);
         SetHighlight(false);
-        luggageRb.isKinematic = true;
-        luggageRb.useGravity = false;
+        
     }
 
 
