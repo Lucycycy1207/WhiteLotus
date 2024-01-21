@@ -188,6 +188,7 @@ public class PlayerController: MonoBehaviour
 
     private void RotatePlayer()
     {
+        if (moveDir == Vector3.zero) return;
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * turnSpeed);
     }
 

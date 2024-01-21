@@ -36,7 +36,6 @@ public class Luggage : HighlightableObject, IPickable
         luggageRb.useGravity = false;
         transform.Rotate(0, 90, 0);
 
-      
         
 
         //make the highlight inactive

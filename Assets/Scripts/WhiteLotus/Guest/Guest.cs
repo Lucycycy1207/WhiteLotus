@@ -7,11 +7,14 @@ public class Guest : MonoBehaviour
 {
     [SerializeField] private LineController lineController;
 
-    public Transform targetPoint { get ; set; }
+    public Transform targetPoint { get ; set; }// line position
 
-    public Transform finishPoint { get; set; }
+    public Transform finishPoint { get; set; }// guest finish task position
+    private Vector3 leavePoint;
+    public int indexInLine { get; set; } // position in line start from 0
 
-    public int indexInLine { get; set; }
+    [SerializeField] private MoodBar moodBar;
+
 
     private NavMeshAgent agent;
     private Guest guest;
@@ -19,11 +22,13 @@ public class Guest : MonoBehaviour
     public bool taskComplete;
 
     private bool inLine;
+    private bool isLeaving;
 
 
     private void Awake()
     {
         guest = this.GetComponent<Guest>();
+        moodBar.SetGuest(guest);
     }
     // Start is called before the first frame update
     void Start()
@@ -33,6 +38,8 @@ public class Guest : MonoBehaviour
         lineController.ArrangeNewGuest(guest);
         taskComplete = false;
         inLine = true;
+        isLeaving = false;
+        leavePoint = this.gameObject.transform.position;
     }
 
     // Update is called once per frame
@@ -40,8 +47,21 @@ public class Guest : MonoBehaviour
     {
         if (targetPoint == null) { return;  }
         
+        if (isLeaving)
+        {
+            if (leavePoint == null) return;
+            //Debug.Log("guest should do the leaving action");
+            //Debug.Log(leavePoint.position);
+            agent.destination = leavePoint;
+            //check if guest arrive the finish Point, destroy it.
+            if (this.transform.position.x == leavePoint.x
+             && this.transform.position.z == leavePoint.z)
+            {
+                Destroy(this.gameObject);
+            }
+        }
 
-        if (taskComplete)
+        else if (taskComplete)
         {
             if (inLine)
             {
@@ -50,32 +70,31 @@ public class Guest : MonoBehaviour
             }
             agent.destination = finishPoint.position;
 
-
             //check if guest arrive the finish Point, destroy it.
             if (this.transform.position.x == finishPoint.position.x
              && this.transform.position.z == finishPoint.position.z)
             {
                 Destroy(this.gameObject);
             }
-            
         }
         else
         {
-            
             agent.destination = targetPoint.position;
-
         }
 
+        
+    }
 
-
-
+    public void Leave()
+    {
+        isLeaving = true;
     }
 
     public void MoveInLine(object sender, System.EventArgs e)
     {
         if (inLine)
         {
-            Debug.Log($"try to move {guest.name} at index {indexInLine}");
+            //Debug.Log($"try to move {guest.name} at index {indexInLine}");
             lineController.MoveForwardPosInLine(indexInLine, guest);
         }
         

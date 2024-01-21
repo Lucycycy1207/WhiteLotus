@@ -240,7 +240,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8567902714604534461}
   - component: {fileID: 4050979123599026602}
-  - component: {fileID: 5905473966252875551}
+  - component: {fileID: 7638495388564257915}
   m_Layer: 11
   m_Name: Desk
   m_TagString: Desk
@@ -290,7 +290,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 2150253047649979177, guid: c8dce477da05e754e8e912991abfd95f, type: 3}
---- !u!114 &5905473966252875551
+--- !u!114 &7638495388564257915
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -299,9 +299,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8832009066964710155}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b62d6418a5c26949b395bce4bd36226, type: 3}
+  m_Script: {fileID: 11500000, guid: c59275d565ec97b4291aff03455bde83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lineController: {fileID: 0}
 --- !u!1001 &1020540770948052553
 PrefabInstance:
   m_ObjectHideFlags: 0

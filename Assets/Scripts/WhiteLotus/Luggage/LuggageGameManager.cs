@@ -50,7 +50,7 @@ public class LuggageGameManager : MonoBehaviour
 
     public void ResetLuggageGame()
     {
-        Debug.Log("reset Luggage game");
+        //Debug.Log("reset Luggage game");
         LuggageGameStart = false;
         timeSinceLastSpawn = 0;
         currentLuggageCount = 0;
