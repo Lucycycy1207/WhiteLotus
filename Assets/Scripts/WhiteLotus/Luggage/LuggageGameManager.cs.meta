@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Scripts/WhiteLotus/Guest/Guest.cs.meta
+guid: d0f6ea6511bfc4c42892012a8e401cf2
+=======
 guid: d7894542ebb272e46b81cd54c1bb344d
+>>>>>>> main:Assets/Scripts/WhiteLotus/Luggage/LuggageGameManager.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
