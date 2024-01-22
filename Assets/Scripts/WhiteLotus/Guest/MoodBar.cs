@@ -6,14 +6,14 @@ using UnityEngine.UI;
 public class MoodBar : MonoBehaviour
 {
 
-    [SerializeField] private Slider slider;
+    private Slider slider;
     private float maxValue;
     private float minValue;
     private float currentValue;
     [SerializeField] private float durationInMinute = 0.1f;
 
     private Guest guest;
-    [SerializeField] private Camera camera;
+    private Camera camera;
     [SerializeField] private Transform Target;
     [SerializeField] private float offSetOnY;
     private bool activeMood;
@@ -37,6 +37,8 @@ public class MoodBar : MonoBehaviour
         minValue = 0;
         currentValue = maxValue;
         activeMood = false;
+        camera = Camera.main;
+        slider = this.GetComponent<Slider>();
     }
 
     public void SetGuest(Guest _guest)
