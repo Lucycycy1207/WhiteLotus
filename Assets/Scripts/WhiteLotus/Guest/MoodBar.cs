@@ -64,6 +64,11 @@ public class MoodBar : MonoBehaviour
         
     }
 
+
+    public void PauseMoodBar()
+    {
+        activeMood = false;
+    }
     private bool CheckCondition()
     {
         //check if guest arrive the target Point.

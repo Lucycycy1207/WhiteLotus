@@ -80,7 +80,7 @@ public class LuggageCar : HighlightableObject, ISelectable
         PlayFinishAudio();
 
         ResetCar();
-        luggageGameManager.ResetLuggageGame();
+        luggageGameManager.FinishGame();
 
     }
 

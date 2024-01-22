@@ -14,10 +14,27 @@ public class LuggageGameManager : MonoBehaviour
     private int currentLuggageCount;
     public bool LuggageGameStart;
 
+    private bool finishGame;
+
     private void Start()
     {
         ResetLuggageGame();
+        finishGame = false;
     }
+
+    public void SetGameStatus(bool b)
+    {
+        LuggageGameStart = b;
+    }
+
+    public void FinishGame()
+    {
+        finishGame = true;
+        ResetLuggageGame();
+        GameManager.GetInstance().finishGame();
+    }
+
+
 
     void Update()
     {

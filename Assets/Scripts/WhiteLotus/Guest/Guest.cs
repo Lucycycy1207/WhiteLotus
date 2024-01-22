@@ -88,6 +88,7 @@ public class Guest : MonoBehaviour
     public void Leave()
     {
         isLeaving = true;
+        moodBar.PauseMoodBar();
     }
 
     public void MoveInLine(object sender, System.EventArgs e)

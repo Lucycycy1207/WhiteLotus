@@ -41,7 +41,10 @@ public class LineController : MonoBehaviour
         currGuestNum = 0;
     }
 
-
+    public void SetFirstGuestComplete()
+    {
+        firstGuestInLine.taskComplete = true;
+    }
     public bool CheckFirstGuestReady()
     {
         //check if it reach the target point

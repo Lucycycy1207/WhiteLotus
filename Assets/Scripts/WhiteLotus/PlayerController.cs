@@ -79,8 +79,8 @@ public class PlayerController: MonoBehaviour
     void Start()
     {
         //Hide Mouse
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
         inputManager.OnInteractAction += InputManager_OnInteractAction;
 
         isPickingSomething = false;
