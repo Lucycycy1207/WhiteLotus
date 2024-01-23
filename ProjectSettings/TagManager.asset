@@ -22,7 +22,7 @@ TagManager:
   - BulletDestroyable
   - RocketDestroyable
   - Selectable
-  - Draggable
+  - Pickable
   - DrawBoard
   - 
   - 

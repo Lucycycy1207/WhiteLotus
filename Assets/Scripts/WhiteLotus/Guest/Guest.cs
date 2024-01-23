@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Linq;
 
-public class Guest : MonoBehaviour
+public class Guest : HighlightableObject, ISelectable
 {
-    [SerializeField] private LineController lineController;
 
+    [SerializeField] private LineController lineController;
     public Transform targetPoint { get ; set; }// line position
 
     public Transform finishPoint { get; set; }// guest finish task position
@@ -25,14 +26,48 @@ public class Guest : MonoBehaviour
     private bool isLeaving;
 
 
+    public void OnSelect()
+    {
+        Debug.Log($"Collide with Guest: {this.gameObject.name}");
+
+        //Debug.Log($"index: {indexInLine}, curr game: {GameManager.GetInstance().currGame}");
+        
+        //this guest is first in line and current game is amenity
+        if (indexInLine == 0 && GameManager.GetInstance().currGame == Game.Amenity)
+        {
+            Debug.Log("bring me the amenity items");
+            
+            GameObject item = PlayerController.Instance.GetPickedItem();
+            if (item == null) return;
+            Debug.Log($"you try to give me {item.name}");
+
+            if (AmenityGameManager.Instance.TargetItemList.Contains(item.name))
+            {
+                Debug.Log("that is what i needed");
+
+                //delete the item from list
+                AmenityGameManager.Instance.TargetItemList.Remove(item.name);
+
+                //destroy player picking item
+                Destroy(item);
+                PlayerController.Instance.SetPickedItem(null);
+
+                AmenityGameManager.Instance.CheckFinishedCondition();
+            }
+        }
+
+    }
+
     private void Awake()
     {
         guest = this.GetComponent<Guest>();
         moodBar.SetGuest(guest);
     }
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         lineController.OnLineMoveForward += MoveInLine;
         agent = GetComponent<NavMeshAgent>();
         lineController.ArrangeNewGuest(guest);

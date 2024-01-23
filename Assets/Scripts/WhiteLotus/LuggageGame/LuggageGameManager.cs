@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class LuggageGameManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class LuggageGameManager : MonoBehaviour
     [SerializeField] private int maxLuggageCount = 3;
     [SerializeField] private float spawnSpeedIncreaseInterval = 20f;
     [SerializeField] private float spawnSpeedIncreaseAmount = 0.1f;
+    [SerializeField] private TextMeshProUGUI LuggageUI;
 
     private float timeSinceLastSpawn;
     private int currentLuggageCount;
@@ -20,11 +22,32 @@ public class LuggageGameManager : MonoBehaviour
     {
         ResetLuggageGame();
         finishGame = false;
+        LuggageUI.enabled = false;
     }
 
     public void SetGameStatus(bool b)
     {
         LuggageGameStart = b;
+        if (LuggageGameStart)
+        {
+            ShowLuggageUI();
+        }
+    }
+    
+    public void ShowLuggageUI()
+    {
+        LuggageUI.enabled = true;
+        StartCoroutine(DisableTextDelayed());
+
+
+    }
+
+    IEnumerator DisableTextDelayed()
+    {
+        // Wait for the specified duration
+        yield return new WaitForSeconds(2);
+        // Disable the UI Text element
+        LuggageUI.enabled = false;
     }
 
     public void FinishGame()

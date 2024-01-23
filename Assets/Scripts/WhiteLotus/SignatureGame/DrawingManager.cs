@@ -73,6 +73,7 @@ public class DrawingManager : MonoBehaviour
 
     public void ClearDrawing()
     {
+        Debug.Log("clear drawing");
         // Destroy all existing drawn lines
         GameObject[] existingLines = GameObject.FindGameObjectsWithTag("Pen");
         foreach (var line in existingLines)

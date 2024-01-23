@@ -11,8 +11,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] SignatureGame signatureGame;
     [SerializeField] LuggageGameManager luggageGameManager;
     [SerializeField] LineController lineController;
+    [SerializeField] AmenityGameManager amenityGameManager;
 
-    private int currGame;
+    public Game currGame { get; private set; }
     
 
     //1. sign game.
@@ -21,7 +22,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        currGame = 0;
+        currGame = Game.NoGame;
     }
 
 // Update is called once per frame
@@ -37,21 +38,27 @@ public class GameManager : MonoBehaviour
 
     public void StartNextGame()
     {
-        if (currGame == 0)
+        if (currGame == Game.NoGame)
         {
             Debug.Log("start signature game");
             signatureGame.SetGameStatus(true);
             currGame++;
         }
-        else if (currGame == 1)
+        else if (currGame == Game.Signature)
         {
             Debug.Log("start luggage game");
             luggageGameManager.SetGameStatus(true);
             currGame++;
         }
-        else if (currGame == 2)
+        else if (currGame == Game.Luggage)
         {
-            Debug.Log("continue");
+            Debug.Log("start Amenity game");
+            amenityGameManager.SetGameStatus(true);
+            currGame++;
+        }
+        else if (currGame == Game.Amenity)
+        {
+            Debug.Log("continue develop new game");
         }
 
     }

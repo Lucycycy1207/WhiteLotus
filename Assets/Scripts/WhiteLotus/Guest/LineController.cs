@@ -7,6 +7,8 @@ using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class LineController : MonoBehaviour
 {
+    public static LineController Instance { get; private set; }
+
     [SerializeField] private Transform[] targetPoint;
     [SerializeField] private Transform finishPoint;
     //[SerializeField] private Transform leavePoint;
@@ -22,12 +24,24 @@ public class LineController : MonoBehaviour
         public HighlightableObject selectedObjectArg;
     }
 
+    private void SetSingleton()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+
+        Instance = this;
+    }
+
     // Start is called before the first frame update
     private void Awake()
     {
         ResetLine();
         guestQueue = new Queue<Guest>();
         firstGuestInLine = null;
+        SetSingleton();
+
     }
 
     // Update is called once per frame
@@ -60,7 +74,7 @@ public class LineController : MonoBehaviour
 
     public void ArrangeNewGuest(Guest _newGuest)
     {
-        Debug.Log($"arrange new guest, queueCount: {guestQueue}");
+        //Debug.Log($"arrange new guest, queueCount: {guestQueue}");
         if (guestQueue.Count < targetPoint.Length)
         {
             
@@ -69,7 +83,7 @@ public class LineController : MonoBehaviour
 
             _newGuest.indexInLine = guestQueue.Count;
             guestQueue.Enqueue(_newGuest);
-            Debug.Log($"arrange new guest, queueCount: {guestQueue.Count}");
+            //Debug.Log($"arrange new guest, queueCount: {guestQueue.Count}");
             
         }
         else
@@ -86,9 +100,11 @@ public class LineController : MonoBehaviour
 
     public void LeaveLine() // first In First out
     {
+        if (guestQueue.Count == 0) return;
         Guest guest = guestQueue.Dequeue();
         guest.finishPoint = finishPoint;
 
+        if (guestQueue.Count == 0) return;
         firstGuestInLine = guestQueue.Peek();
 
         LineMoveForward();
