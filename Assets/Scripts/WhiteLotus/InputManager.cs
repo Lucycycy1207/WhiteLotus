@@ -12,7 +12,7 @@ public class InputManager : MonoBehaviour
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
 
-        //perform event: know when player pressed the interact key(E)
+        //perform event: know when player pressed the interact key(E) (bind in unity)
         playerInputActions.Player.Interact.performed += Interact_performed;
     }
 

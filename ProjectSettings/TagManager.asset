@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Luggage
+  - LuggageCar
+  - Desk
+  - Screen
+  - Pen
   layers:
   - Default
   - TransparentFX
@@ -17,8 +22,8 @@ TagManager:
   - BulletDestroyable
   - RocketDestroyable
   - Selectable
-  - Draggable
-  - 
+  - Pickable
+  - DrawBoard
   - 
   - 
   - 
