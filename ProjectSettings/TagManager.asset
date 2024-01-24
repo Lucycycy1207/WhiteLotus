@@ -8,6 +8,7 @@ TagManager:
   - LuggageCar
   - Desk
   - Screen
+  - Pen
   layers:
   - Default
   - TransparentFX
@@ -21,8 +22,8 @@ TagManager:
   - BulletDestroyable
   - RocketDestroyable
   - Selectable
-  - Draggable
-  - 
+  - Pickable
+  - DrawBoard
   - 
   - 
   - 

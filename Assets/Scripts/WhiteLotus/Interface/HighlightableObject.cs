@@ -7,14 +7,17 @@ public class HighlightableObject : MonoBehaviour, IHighlightable
 
     private GameObject SelectedVisual;
     private bool isActive;
+    private bool isHighLight;
     public void Highlight()
     {
         SelectedVisual.SetActive(true);
+        isHighLight = true;
     }
 
     public void UnHighlight()
     {
         SelectedVisual.SetActive(false);
+        isHighLight = false;
     }
 
     // Start is called before the first frame update
@@ -22,7 +25,9 @@ public class HighlightableObject : MonoBehaviour, IHighlightable
     {
         SelectedVisual = this.transform.GetChild(1).GetChild(0).gameObject;
         SelectedVisual.SetActive(false);
+        isHighLight = false;
         isActive = true;
+
 
         //combine event and function in the  start
         //This means that when the OnSelectedDeskChanged event is triggered, the PlayerOnSelectedDeskChanged method will be called.
@@ -32,6 +37,7 @@ public class HighlightableObject : MonoBehaviour, IHighlightable
     {
         
         if (SelectedVisual == null || isActive == false) {
+            
             //Debug.Log($"none visual {this.gameObject.name}");
             return; }
 
@@ -43,6 +49,7 @@ public class HighlightableObject : MonoBehaviour, IHighlightable
         }
         else
         {
+            //Debug.Log($"unhighlight: {SelectedVisual.name}");
             UnHighlight();
         }
     }
@@ -56,5 +63,12 @@ public class HighlightableObject : MonoBehaviour, IHighlightable
     {
         SelectedVisual.SetActive(b);
     }
+
+    public bool isHighlight()
+    {
+        return isHighLight;
+    }
+
+
 
 }

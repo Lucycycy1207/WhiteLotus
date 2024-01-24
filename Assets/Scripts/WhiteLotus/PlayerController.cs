@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Events;
 
-public class PlayerController: MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 
     public static PlayerController Instance { get; private set; }
@@ -60,10 +60,13 @@ public class PlayerController: MonoBehaviour
     private Vector3 lastInteractDir;
     private HighlightableObject selectedObject;
     public bool isPickingSomething;
+
+
     private GameObject PickedItem;
 
     private Transform mainCameraTransform;
     
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -75,15 +78,17 @@ public class PlayerController: MonoBehaviour
         mainCameraTransform = Camera.main.transform;
     }
 
+
     // Start is called before the first frame update
     void Start()
     {
         //Hide Mouse
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
         inputManager.OnInteractAction += InputManager_OnInteractAction;
 
         isPickingSomething = false;
+        PickedItem = null;
     }
 
     public GameObject GetPickedItem()
@@ -100,16 +105,23 @@ public class PlayerController: MonoBehaviour
         else
         {
             isPickingSomething = false;
+
         }
     }
 
     private void InputManager_OnInteractAction(object sender, System.EventArgs e)
     {
+        if (isPickingSomething)
+        {
+            PickedItem.GetComponent<IPickable>().OnDropped();
+        }
 
         if (selectedObject != null)
         {
+            //Debug.Log("not null");
             if (selectedObject.gameObject.TryGetComponent<ISelectable>(out ISelectable isSelectable))
             {
+                //Debug.Log("selectable thing");
                 isSelectable.OnSelect();
             }
             else if (selectedObject.gameObject.TryGetComponent<IPickable>(out IPickable isPickable))
@@ -118,11 +130,14 @@ public class PlayerController: MonoBehaviour
                 {
                     isPickable.OnDropped();
                     isPickingSomething = false;
+                    PickedItem = null;
+                    //Debug.Log("nothing");
                 }
                 else
                 {
                     isPickingSomething = true;
 
+                    //Debug.Log("isPickingSomething");
                     isPickable.OnPicked(playerPickTransform);
                     PickedItem = selectedObject.gameObject;
                 }
@@ -188,6 +203,7 @@ public class PlayerController: MonoBehaviour
 
     private void RotatePlayer()
     {
+        if (moveDir == Vector3.zero) return;
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * turnSpeed);
     }
 
@@ -252,7 +268,7 @@ public class PlayerController: MonoBehaviour
         OnSelectedObjectChanged?.Invoke(this, new OnSelectedObjectChangedEventArgs
         {
             selectedObjectArg = _selectedObject
-        });
+    });
     }
 
 }

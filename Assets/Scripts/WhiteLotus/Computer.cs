@@ -7,5 +7,6 @@ public class Computer : HighlightableObject, ISelectable
     public void OnSelect()
     {
         Debug.Log("OnSelect with Computer");
+
     }
 }
