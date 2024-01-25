@@ -7,7 +7,7 @@ public class Breakfast : HighlightableObject, IPickable
     Rigidbody breakfastRb;
 
     private Collider breakfastCollider;
-
+    
     protected override void Start()
     {
         base.Start();

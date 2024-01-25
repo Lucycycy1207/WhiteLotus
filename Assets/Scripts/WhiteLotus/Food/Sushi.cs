@@ -13,6 +13,7 @@ public class Sushi : HighlightableObject, IPickable
     {
         base.Start();
         sushiRb = GetComponent<Rigidbody>();
+        
         sushiCollider = GetComponent<Collider>();
     }
 
@@ -23,6 +24,7 @@ public class Sushi : HighlightableObject, IPickable
         transform.SetParent(null);
         //make the highlight active
         SetHighlightMode(true);
+        
         sushiCollider.enabled = true;
     }
 
@@ -38,9 +40,8 @@ public class Sushi : HighlightableObject, IPickable
 
         sushiRb.isKinematic = true;
         sushiRb.useGravity = false;
+
         sushiCollider.enabled = false;
-
-
 
 
         //make the highlight inactive
