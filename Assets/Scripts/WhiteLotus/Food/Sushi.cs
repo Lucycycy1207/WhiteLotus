@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class Sushi : HighlightableObject, IPickable
 {
-    Rigidbody sushiRb;
+    private Rigidbody sushiRb;
+
+    private Collider sushiCollider;
 
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
         sushiRb = GetComponent<Rigidbody>();
+        
+        sushiCollider = GetComponent<Collider>();
     }
 
     public void OnDropped()
@@ -20,6 +24,8 @@ public class Sushi : HighlightableObject, IPickable
         transform.SetParent(null);
         //make the highlight active
         SetHighlightMode(true);
+        
+        sushiCollider.enabled = true;
     }
 
     public void OnPicked(Transform attachTransform)
@@ -34,9 +40,8 @@ public class Sushi : HighlightableObject, IPickable
 
         sushiRb.isKinematic = true;
         sushiRb.useGravity = false;
-        
 
-
+        sushiCollider.enabled = false;
 
 
         //make the highlight inactive

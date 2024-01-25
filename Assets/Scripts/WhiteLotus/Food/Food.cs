@@ -2,30 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Breakfast : HighlightableObject, IPickable
+public class Food : HighlightableObject, IPickable
 {
-    Rigidbody breakfastRb;
+    private Rigidbody foodRb;
 
-    private Collider breakfastCollider;
-    
+    private Collider foodCollider;
+
+    // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
-        breakfastRb = GetComponent<Rigidbody>();
+        foodRb = GetComponent<Rigidbody>();
+        foodCollider = GetComponent<Collider>();
     }
 
     public void OnDropped()
     {
-        breakfastRb.isKinematic = false;
-        breakfastRb.useGravity = true;
+        foodRb.isKinematic = false;
+        foodRb.useGravity = true;
         transform.SetParent(null);
         //make the highlight active
         SetHighlightMode(true);
+        foodCollider.enabled = true;
     }
 
     public void OnPicked(Transform attachTransform)
     {
-        Debug.Log("OnPicked with Breakfast");
+        Debug.Log("OnPicked with Food");
         //Pickup item
 
         transform.position = attachTransform.position;
@@ -33,9 +36,13 @@ public class Breakfast : HighlightableObject, IPickable
         transform.rotation = attachTransform.rotation;
         transform.SetParent(attachTransform);
 
-        breakfastRb.isKinematic = true;
-        breakfastRb.useGravity = false;
-        
+        foodRb.isKinematic = true;
+        foodRb.useGravity = false;
+        foodCollider.enabled = false;
+
+
+
+
         //make the highlight inactive
         SetHighlightMode(false);
         SetHighlight(false);
