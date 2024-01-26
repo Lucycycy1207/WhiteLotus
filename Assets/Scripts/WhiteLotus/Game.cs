@@ -3,5 +3,6 @@ public enum Game
     NoGame,
     Signature,
     Luggage,
-    Amenity
+    Amenity,
+    Food
 }
