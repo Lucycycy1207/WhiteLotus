@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] LineController lineController;
     [SerializeField] AmenityGameManager amenityGameManager;
     [SerializeField] FoodGameManager foodGameManager;
+    [SerializeField] SceneChanger sceneChanger;
 
 
     public Game currGame { get; private set; }
@@ -30,6 +31,14 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        GameObject[] Guests = GameObject.FindGameObjectsWithTag("Guest");
+
+        // Check if any GameObjects were found
+        if (Guests.Length == 0)
+        {
+            finishGame();
+            EndGamePlay();
+        }
     }
 
     public void finishGame()
@@ -64,8 +73,18 @@ public class GameManager : MonoBehaviour
             foodGameManager.SetGameStatus(true);
             currGame++;
         }
+        else
+        {
+            Debug.Log("all game finished");
+        }
 
     }
+
+    public void EndGamePlay()
+    {
+        sceneChanger.ChangeToScene("EndMenu");
+    }
+
     private void Awake()
     {
         SetSingleton();

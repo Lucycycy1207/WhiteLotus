@@ -46,7 +46,6 @@ public class FoodGameManager : MonoBehaviour
 
     void Update()
     {
-
     }
 
     //public void CheckFinishedCondition()
@@ -100,11 +99,11 @@ public class FoodGameManager : MonoBehaviour
         if (TargetItemsArray.Count > 0)
         {
             // Choose a random index from the list
-            int randomIndex = UnityEngine.Random.Range(0, TargetItemsArray.Count);
+            int randomIndex = Random.Range(0, TargetItemsArray.Count);
 
             // Get the chosen item
             chosenItem = TargetItemsArray[randomIndex];
-            Debug.Log("Chosen Item: " + chosenItem.name);
+            //Debug.Log("Chosen Item: " + chosenItem.name);
         }
     }
 }
