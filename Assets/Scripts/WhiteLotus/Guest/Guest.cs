@@ -55,7 +55,31 @@ public class Guest : HighlightableObject, ISelectable
                 AmenityGameManager.Instance.CheckFinishedCondition();
             }
         }
+        else if (indexInLine == 0 && GameManager.GetInstance().currGame == Game.Food)
+        {
+            Debug.Log("bring me the food item");
+            GameObject item = PlayerController.Instance.GetPickedItem();
+            if (item == null) return;
+            
+            Debug.Log($"you try to give me {item.name}");
 
+            GameObject chosenItem = FoodGameManager.Instance.chosenItem;
+
+            // Check if the picked item is the chosen item
+            if (item == chosenItem)
+            {
+                Debug.Log("That is what I needed");
+
+                // Destroy the picked item
+                Destroy(item);
+
+                // Clear the player's picked item
+                PlayerController.Instance.SetPickedItem(null);
+
+                // Check the finished condition
+                FoodGameManager.Instance.CheckFinishedCondition();
+            }
+        }
     }
 
     private void Awake()

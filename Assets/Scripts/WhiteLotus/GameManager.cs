@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] LuggageGameManager luggageGameManager;
     [SerializeField] LineController lineController;
     [SerializeField] AmenityGameManager amenityGameManager;
+    [SerializeField] FoodGameManager foodGameManager;
 
     public Game currGame { get; private set; }
     
@@ -56,9 +57,11 @@ public class GameManager : MonoBehaviour
             amenityGameManager.SetGameStatus(true);
             currGame++;
         }
-        else if (currGame == Game.Amenity)
+        else if (currGame == Game.Food)
         {
-            Debug.Log("continue develop new game");
+            Debug.Log("start Food game");
+            foodGameManager.SetGameStatus(true);
+            currGame++;
         }
 
     }
