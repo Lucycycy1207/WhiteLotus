@@ -9,7 +9,6 @@ TagManager:
   - Desk
   - Screen
   - Pen
-  - Guest
   layers:
   - Default
   - TransparentFX

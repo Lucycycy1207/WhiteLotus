@@ -12,12 +12,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] LuggageGameManager luggageGameManager;
     [SerializeField] LineController lineController;
     [SerializeField] AmenityGameManager amenityGameManager;
-    [SerializeField] FoodGameManager foodGameManager;
-    [SerializeField] SceneChanger sceneChanger;
-
 
     public Game currGame { get; private set; }
-
+    
 
     //1. sign game.
     //2. luggage game;
@@ -28,17 +25,9 @@ public class GameManager : MonoBehaviour
         currGame = Game.NoGame;
     }
 
-    // Update is called once per frame
+// Update is called once per frame
     void Update()
     {
-        GameObject[] Guests = GameObject.FindGameObjectsWithTag("Guest");
-
-        // Check if any GameObjects were found
-        if (Guests.Length == 0)
-        {
-            finishGame();
-            EndGamePlay();
-        }
     }
 
     public void finishGame()
@@ -69,22 +58,10 @@ public class GameManager : MonoBehaviour
         }
         else if (currGame == Game.Amenity)
         {
-            Debug.Log("start Food game");
-            foodGameManager.SetGameStatus(true);
-            currGame++;
-        }
-        else
-        {
-            Debug.Log("all game finished");
+            Debug.Log("continue develop new game");
         }
 
     }
-
-    public void EndGamePlay()
-    {
-        sceneChanger.ChangeToScene("EndMenu");
-    }
-
     private void Awake()
     {
         SetSingleton();

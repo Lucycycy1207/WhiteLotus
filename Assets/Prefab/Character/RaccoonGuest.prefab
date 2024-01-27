@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: 4294162630123820768}
   m_Layer: 11
   m_Name: RaccoonGuest
-  m_TagString: Guest
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -113,10 +113,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.9650954
+  m_Radius: 0.737068
   m_Height: 3.0883234
   m_Direction: 1
-  m_Center: {x: 0.042849302, y: 1.5249087, z: 0.019971848}
+  m_Center: {x: 0.010209143, y: 1.5249087, z: 0.019971848}
 --- !u!114 &4294162630123820768
 MonoBehaviour:
   m_ObjectHideFlags: 0
