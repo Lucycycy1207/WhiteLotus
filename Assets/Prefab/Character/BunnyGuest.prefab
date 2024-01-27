@@ -647,7 +647,7 @@ GameObject:
   - component: {fileID: 5482145489738086022}
   m_Layer: 11
   m_Name: BunnyGuest
-  m_TagString: Untagged
+  m_TagString: Guest
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
