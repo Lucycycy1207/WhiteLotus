@@ -62,6 +62,7 @@ public class FoodGameManager : MonoBehaviour
         Debug.Log("food game is set, pop UI");
         FoodGameStart = b;
 
+        FoodUI.text = $"Bring <color=#FF0000>{chosenItem.name}</color> to customer";
         FoodUI.enabled = true;
 
         StartCoroutine(DisableTextDelayed());

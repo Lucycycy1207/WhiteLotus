@@ -6,12 +6,12 @@ public class LuggageSpawner : MonoBehaviour
 {
     [SerializeField] GameObject luggagePrefab;
     [SerializeField] private float spawnRadius = 5f;
-    [SerializeField] private Vector3 spawnCenter;
+    private Vector3 spawnCenter;
 
 
     private void Start()
     {
-
+        spawnCenter = transform.position;
     }
 
     public void SpawnLuggage()

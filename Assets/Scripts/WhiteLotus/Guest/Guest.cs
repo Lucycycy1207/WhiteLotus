@@ -68,9 +68,9 @@ public class Guest : HighlightableObject, ISelectable
             Debug.Log($"i wanna {chosenItem}");
 
             // Check if the picked item is the chosen item
-            if (item == chosenItem)
+            if (item.name == chosenItem.name)
             {
-                Debug.Log("That is what I needed");
+                Debug.Log($"That is what I needed, {item.name}");
 
                 // Destroy the picked item
                 Destroy(item);
@@ -116,9 +116,13 @@ public class Guest : HighlightableObject, ISelectable
             //Debug.Log("guest should do the leaving action");
             //Debug.Log(leavePoint.position);
             agent.destination = leavePoint;
+
+            float distanceOnX = this.transform.position.x - leavePoint.x;
+            float distanceOnZ = this.transform.position.z - leavePoint.z;
+
+            //Debug.Log($"distance: ({distanceOnX}, {distanceOnZ})");
             //check if guest arrive the finish Point, destroy it.
-            if (this.transform.position.x == leavePoint.x
-             && this.transform.position.z == leavePoint.z)
+            if (Mathf.Abs(distanceOnX) < 0.1 && Mathf.Abs(distanceOnZ) < 0.1)
             {
                 Destroy(this.gameObject);
             }
@@ -134,8 +138,12 @@ public class Guest : HighlightableObject, ISelectable
             agent.destination = finishPoint.position;
 
             //check if guest arrive the finish Point, destroy it.
-            if (this.transform.position.x == finishPoint.position.x
-             && this.transform.position.z == finishPoint.position.z)
+            float distanceOnX = this.transform.position.x - finishPoint.position.x;
+            float distanceOnZ = this.transform.position.z - finishPoint.position.z;
+
+            //Debug.Log($"distance: ({distanceOnX}, {distanceOnZ})");
+            //check if guest arrive the finish Point, destroy it.
+            if (Mathf.Abs(distanceOnX) < 0.1 && Mathf.Abs(distanceOnZ) < 0.1)
             {
                 Destroy(this.gameObject);
             }
