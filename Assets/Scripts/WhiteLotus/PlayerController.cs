@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.Events;
+using System.Security.Cryptography;
 
 public class PlayerController : MonoBehaviour
 {
@@ -53,13 +54,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform playerPickTransform;
 
     //Interaction Raycasts
-    private RaycastHit hit;
+    private RaycastHit[] hits;
 
     private bool isWalking;
     Vector3 moveDir;
     private Vector3 lastInteractDir;
     private HighlightableObject selectedObject;
     public bool isPickingSomething;
+
+    //player info:
+    private float playerHeight = 2f;
+    private float groundHeight = 0f;
+    private float playerRadius = 1f;
+
 
 
     private GameObject PickedItem;
@@ -221,44 +228,87 @@ public class PlayerController : MonoBehaviour
             lastInteractDir = moveDir;
         }
 
+        ///
         //Create 3 ray origin, with height 0, 1, 2
         //Priority Level 0 > 2 > 1
         //if hit something
-        Vector3 groundHeight = transform.position; groundHeight.y = 0;
-        Vector3 tableHeight = transform.position; tableHeight.y = 1;
-        Vector3 shelfHeight = transform.position; shelfHeight.y = 2;
-        RaycastHit[] raycastHit= new RaycastHit[3];
-        Vector3[] HeightList = { groundHeight, shelfHeight, tableHeight };
 
-        int HeightNum = 3;
+        //Vector3 groundHeight = transform.position; groundHeight.y = 0;
+        //Vector3 tableHeight = transform.position; tableHeight.y = 1;
+        //Vector3 shelfHeight = transform.position; shelfHeight.y = 2;
+        //RaycastHit[] raycastHit= new RaycastHit[3];
+        //Vector3[] HeightList = { groundHeight, shelfHeight, tableHeight };
+
+        //int HeightNum = 3;
+        //bool hasHit = false;
+        //for (int i = 0; i < HeightNum; i++)
+        //{
+
+        //    if (Physics.Raycast(HeightList[i], lastInteractDir, out raycastHit[i], interactDistance, layerMask))
+        //    {
+        //        if (raycastHit[i].transform.TryGetComponent(out HighlightableObject desk))
+        //        {
+        //            if (desk != selectedObject)
+        //            {
+        //                SetSelectedObject(desk);
+        //                hasHit = true;
+        //                break;
+        //            }
+        //            else
+        //            {
+        //                //player still hit to previous selectable game object
+        //                hasHit = true;
+        //                break;
+        //            }
+        //        }
+        //    }
+        //}
+
+        ///
+
+
+        
+
+        Vector3 playerGround = characterController.transform.position;
+        playerGround.y = groundHeight;
+        Vector3 playerTop = characterController.transform.position;
+        playerTop.y = playerHeight;
         bool hasHit = false;
-        for (int i = 0; i < HeightNum; i++)
-        {
 
-            if (Physics.Raycast(HeightList[i], lastInteractDir, out raycastHit[i], interactDistance, layerMask))
+        hits = Physics.CapsuleCastAll(playerGround, playerTop, playerRadius, lastInteractDir, interactDistance, layerMask);
+
+        if (hits.Length == 0) return;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i].transform.TryGetComponent(out HighlightableObject interactObject))
             {
-                if (raycastHit[i].transform.TryGetComponent(out HighlightableObject desk))
+                
+                if (interactObject != selectedObject)
+                    {
+                        Debug.Log($"player hits {interactObject.name}");
+                        SetSelectedObject(interactObject);
+                        hasHit = true;
+                        break;
+                }
+                else
                 {
-                    if (desk != selectedObject)
-                    {
-                        SetSelectedObject(desk);
-                        hasHit = true;
-                        break;
-                    }
-                    else
-                    {
-                        //player still hit to previous selectable game object
-                        hasHit = true;
-                        break;
-                    }
+                    //player still hit to previous selectable game object
+                    hasHit = true;
+                    break;
                 }
             }
         }
-        
+
+
         if (hasHit == false)
         {
             SetSelectedObject(null);
         }
+
+
+
+
     }
 
     private void SetSelectedObject(HighlightableObject _selectedObject)

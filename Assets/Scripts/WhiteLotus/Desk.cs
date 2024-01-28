@@ -8,16 +8,17 @@ public class Desk : HighlightableObject, ISelectable
     [SerializeField] SceneChanger sceneChanger;
 
     [SerializeField] GameManager gameManager;
-    [SerializeField] GameObject[] gameList;
     private Guest lastGuest;
 
     Event sceneChange;
 
     public void OnSelect()
     {
-        if (!lineController.CheckFirstGuestReady()) { return; }
         Debug.Log("Collide with Desk");
+        if (!lineController.CheckFirstGuestReady()) { return; }
+        Debug.Log("here");
         Guest guest = lineController.firstGuestInLine;
+        Debug.Log("There");
         if ((lastGuest != null && lastGuest == guest)) return;
         
         lastGuest = guest;
