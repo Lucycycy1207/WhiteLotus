@@ -33,7 +33,7 @@ public class StartMenu : MonoBehaviour
     public void ExitGame()
     {
         //this is for exit play mode in unity
-        UnityEditor.EditorApplication.isPlaying = false;
+        //UnityEditor.EditorApplication.isPlaying = false;
 
         //this one is for published game
         Application.Quit();
